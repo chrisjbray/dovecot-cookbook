@@ -32,7 +32,11 @@ pwfile = node['dovecot']['conf']['password_file']
 
 ruby_block 'databag_to_dovecot_userdb' do
   block do
-    databag_users = data_bag_item(db_name, db_item)['users']
+    if node['dovecot'].key? 'pwfile_users'
+      databag_users = node['dovecot']['pwfile_users']
+    else
+      databag_users = data_bag_item(db_name, db_item)['users']
+    end
 
     # Check if passwd file exists:
     local_creds, pwfile_exists = DovecotCookbook::Pwfile.passfile_read(pwfile)
